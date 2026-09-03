@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DuoTools - Universal Compressor & Live Exchange</title>
+    <meta name="description" content="Universal File Compressor and Real-time Crypto/Fiat Currency Converter with a modern glassmorphism UI." />
+    <meta property="og:title" content="DuoTools - Universal Compressor & Live Exchange" />
+    <meta property="og:description" content="Universal File Compressor and Real-time Crypto/Fiat Currency Converter with a modern glassmorphism UI." />
+    <script>
+      // Protect window.ethereum from conflicting wallet extension injections (MetaMask, Phantom, etc.)
+      (function () {
+        try {
+          var originalDefineProperty = Object.defineProperty;
+          Object.defineProperty = function (obj, prop, descriptor) {
+            if (obj === window && prop === 'ethereum') {
+              try {
+                return originalDefineProperty.call(this, obj, prop, Object.assign({}, descriptor, {
+                  configurable: true,
+                  writable: true
+                }));
+              } catch (err) {
+                console.warn('[DuoTools] Handled duplicate ethereum definition:', err);
+                return obj;
+              }
+            }
+            return originalDefineProperty.apply(this, arguments);
+          };
+        } catch (e) {}
+
+        var prevOnError = window.onerror;
+        window.onerror = function (message, source, lineno, colno, error) {
+          if (typeof message === 'string' && message.indexOf('Cannot redefine property: ethereum') !== -1) {
+            return true;
+          }
+          if (prevOnError) {
+            return prevOnError.apply(this, arguments);
+          }
+        };
+
+        window.addEventListener('error', function (event) {
+          if (event && event.message && event.message.indexOf('Cannot redefine property: ethereum') !== -1) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

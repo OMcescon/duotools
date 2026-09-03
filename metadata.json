@@ -1,0 +1,6 @@
+{
+  "name": "DuoTools",
+  "description": "Universal File Compressor and Real-time Crypto/Fiat Currency Converter with a modern glassmorphism UI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

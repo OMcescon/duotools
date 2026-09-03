@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-purple: #bc13fe;
+  --color-neon-cyan: #00f3ff;
+  --color-glass-bg: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-[#0a0a0c] text-white min-h-screen font-sans selection:bg-neon-purple/30;
+    background-image: 
+      radial-gradient(circle at 0% 0%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(0, 243, 255, 0.15) 0%, transparent 50%);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl shadow-2xl;
+  }
+  
+  .glass-input {
+    @apply bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-neon-cyan/50 transition-all;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-neon-purple to-neon-cyan text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-neon-purple/20;
+  }
+}
