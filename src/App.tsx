@@ -4,11 +4,14 @@ import { FileText, LineChart, Github, Menu, X, LayoutGrid } from 'lucide-react';
 import Compressor from './components/Compressor';
 import Converter from './components/Converter';
 import Methodology from './components/Methodology';
+import BobDashboard from './components/BobDashboard';
 
-type Tab = 'compressor' | 'converter' | 'methodology';
+// TEMP (Fase 3 — prueba local): 'bob' se agrega aquí solo para probar
+// BobDashboard en el navegador. Se reemplaza por la navegación final en Fase 7.
+type Tab = 'compressor' | 'converter' | 'methodology' | 'bob';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('converter');
+  const [activeTab, setActiveTab] = useState<Tab>('bob');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -27,6 +30,16 @@ export default function App() {
 
           {/* Desktop Tabs */}
             <div className="hidden md:flex items-center space-x-1 bg-white/5 p-1 rounded-xl border border-white/10">
+              <button
+                onClick={() => setActiveTab('bob')}
+                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === 'bob'
+                    ? 'bg-white/10 text-white shadow-sm'
+                    : 'text-white/40 hover:text-white/60'
+                }`}
+              >
+                BOB Hoy (TEMP)
+              </button>
               <button
                 onClick={() => setActiveTab('compressor')}
                 className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -90,6 +103,18 @@ export default function App() {
             <div className="p-4 space-y-2">
               <button
                 onClick={() => {
+                  setActiveTab('bob');
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center space-x-3 p-4 rounded-xl transition-all ${
+                  activeTab === 'bob' ? 'bg-neon-cyan/10 text-neon-cyan' : 'text-white/60'
+                }`}
+              >
+                <LineChart className="w-5 h-5" />
+                <span className="font-medium">BOB Hoy (TEMP)</span>
+              </button>
+              <button
+                onClick={() => {
                   setActiveTab('compressor');
                   setIsMenuOpen(false);
                 }}
@@ -137,7 +162,15 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          {activeTab === 'compressor' ? <Compressor /> : activeTab === 'converter' ? <Converter onTabChange={setActiveTab} /> : <Methodology />}
+          {activeTab === 'bob' ? (
+            <BobDashboard />
+          ) : activeTab === 'compressor' ? (
+            <Compressor />
+          ) : activeTab === 'converter' ? (
+            <Converter onTabChange={setActiveTab} />
+          ) : (
+            <Methodology />
+          )}
         </motion.div>
       </main>
 

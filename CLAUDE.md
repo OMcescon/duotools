@@ -92,3 +92,6 @@ Fase 8: tsc --noEmit + revisión final
 - tsc --noEmit después de cada fase
 - Todos los datos financieros con timestamp visible
 - Siempre mostrar fuente del dato (BCB, Binance P2P, CoinGecko)
+
+## Estado actual: Fases 1-3 completadas. 
+Pendiente: Fases 4-8

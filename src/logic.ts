@@ -69,6 +69,39 @@ export const fetchRates = async (baseCurrency: string = 'usd') => {
 };
 
 /**
+ * BOB Dashboard Engine (TCO oficial, histórico y P2P)
+ */
+export const fetchBcbRate = async () => {
+  try {
+    const res = await axios.get('/api/bcb-rate');
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching BCB rate:', error);
+    throw error;
+  }
+};
+
+export const fetchBcbHistory = async () => {
+  try {
+    const res = await axios.get('/api/bcb-history');
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching BCB history:', error);
+    throw error;
+  }
+};
+
+export const fetchP2pRates = async () => {
+  try {
+    const res = await axios.get('/api/p2p-rates');
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching P2P rates:', error);
+    throw error;
+  }
+};
+
+/**
  * Historical Data for Charts with Range Support
  */
 export const fetchHistoricalData = async (coinId: string, vsCurrency: string = 'usd', days: string = '1') => {
