@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { fetchWithCache } from './_lib/cache';
+import { BCB_HEADERS } from './_lib/headers';
 
 const BCB_URL = 'https://www.bcb.gob.bo/tco_reporte_ultima_cotizacion.php';
 
@@ -21,7 +22,7 @@ const DATE_RE = /(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})/i;
 type HistoryPoint = { date: string; value: number };
 
 async function scrapeHistory(): Promise<HistoryPoint[]> {
-  const response = await fetch(BCB_URL, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  const response = await fetch(BCB_URL, { headers: BCB_HEADERS });
   if (!response.ok) throw new Error(`BCB respondió ${response.status}`);
   const html = await response.text();
 

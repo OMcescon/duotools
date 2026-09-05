@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { fetchWithCache } from './_lib/cache';
+import { P2P_HEADERS } from './_lib/headers';
 
 const ASSET = 'USDT';
 const FIAT = 'BOB';
@@ -22,7 +23,7 @@ async function fetchBinance(): Promise<P2POffer> {
     const search = async (tradeType: 'BUY' | 'SELL') => {
       const response = await fetch('https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...P2P_HEADERS, 'Content-Type': 'application/json' },
         body: JSON.stringify({ fiat: FIAT, asset: ASSET, tradeType, page: 1, rows: ROWS }),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -58,7 +59,7 @@ async function fetchBybit(): Promise<P2POffer> {
     const search = async (side: '1' | '0') => {
       const response = await fetch('https://api2.bybit.com/fiat/otc/item/online', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...P2P_HEADERS, 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: '', tokenId: ASSET, currencyId: FIAT, payment: [], side, size: String(ROWS), page: '1', amount: '' }),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -91,7 +92,7 @@ async function fetchOkx(): Promise<P2POffer> {
   try {
     const search = async (side: 'buy' | 'sell') => {
       const url = `https://www.okx.com/v3/c2c/tradingOrders/books?side=${side}&baseCurrency=${ASSET.toLowerCase()}&quoteCurrency=${FIAT.toLowerCase()}&paymentMethod=all&userType=all`;
-      const response = await fetch(url);
+      const response = await fetch(url, { headers: P2P_HEADERS });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const json = await response.json();
       if (json.code !== 0) throw new Error('OKX error');

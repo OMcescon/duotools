@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { fetchWithCache } from './_lib/cache';
+import { BCB_HEADERS } from './_lib/headers';
 
 const BCB_URL = 'https://www.bcb.gob.bo/tco_reporte_ultima_cotizacion.php';
 
@@ -12,7 +13,7 @@ const CUTOFF_DATE_RE = /class="tco-public-date">\s*FECHA DE CORTE:\s*([^<]+?)\s*
 const EFFECTIVE_DATE_RE = /class="tco-public-vigencia">\s*VIGENCIA:\s*([^<]+?)\s*</i;
 
 async function scrapeBcb() {
-  const response = await fetch(BCB_URL, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  const response = await fetch(BCB_URL, { headers: BCB_HEADERS });
   if (!response.ok) throw new Error(`BCB respondió ${response.status}`);
   const html = await response.text();
 
