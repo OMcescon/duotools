@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { fetchWithCache } from './_lib/cache';
-import { P2P_HEADERS } from './_lib/headers';
+import { fetchWithCache } from './_lib/cache.js';
+import { P2P_HEADERS } from './_lib/headers.js';
 
 const ASSET = 'USDT';
 const FIAT = 'BOB';

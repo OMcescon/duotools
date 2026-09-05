@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { fetchWithCache } from './_lib/cache';
+import { fetchWithCache } from './_lib/cache.js';
 
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price';
 const DEFAULT_IDS = 'bitcoin,ethereum,solana,tether,binancecoin';

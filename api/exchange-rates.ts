@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { fetchWithCache } from './_lib/cache';
+import { fetchWithCache } from './_lib/cache.js';
 
 const FRANKFURTER_URL = 'https://api.frankfurter.dev/v2/latest';
 

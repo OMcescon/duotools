@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { fetchWithCache } from './_lib/cache';
-import { BCB_HEADERS } from './_lib/headers';
+import { fetchWithCache } from './_lib/cache.js';
+import { BCB_HEADERS } from './_lib/headers.js';
 
 const BCB_URL = 'https://www.bcb.gob.bo/tco_reporte_ultima_cotizacion.php';
 
