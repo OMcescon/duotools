@@ -69,6 +69,19 @@ export const fetchRates = async (baseCurrency: string = 'usd') => {
 };
 
 /**
+ * Crypto Rates Engine (CoinGecko USD + BOB derivado del TCO BCB)
+ */
+export const fetchCryptoRates = async (ids: string) => {
+  try {
+    const res = await axios.get(`/api/crypto-rates?ids=${ids}`);
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching crypto rates:', error);
+    throw error;
+  }
+};
+
+/**
  * BOB Dashboard Engine (TCO oficial, histórico y P2P)
  */
 export const fetchBcbRate = async () => {
