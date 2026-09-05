@@ -54,7 +54,6 @@ const PRIORITY_PAIRS = [
 const EXCHANGE_LINKS: Record<string, string> = {
   'Binance P2P': 'https://p2p.binance.com',
   'Bybit P2P': 'https://www.bybit.com/fiat/trade/otc',
-  'OKX P2P': 'https://www.okx.com/p2p-markets',
 };
 
 const REFRESH_INTERVAL_MS = 60_000;
@@ -206,6 +205,11 @@ export default function Converter({ onTabChange }: { onTabChange?: (tab: any) =>
   const sellOffers = okOffers.filter(o => o.sellPrice !== null && !isAnomalousPrice(o.sellPrice, bcb.data?.tco ?? null));
   const bestBuyOffer = buyOffers.length ? buyOffers.reduce((a, b) => (b.buyPrice! < a.buyPrice! ? b : a)) : null;
   const bestSellOffer = sellOffers.length ? sellOffers.reduce((a, b) => (b.sellPrice! > a.sellPrice! ? b : a)) : null;
+
+  // Precio promedio entre las dos únicas plataformas con liquidez real (Binance + Bybit)
+  const binanceBuy = buyOffers.find(o => o.exchange === 'Binance P2P')?.buyPrice ?? null;
+  const bybitBuy = buyOffers.find(o => o.exchange === 'Bybit P2P')?.buyPrice ?? null;
+  const avgBuyPrice = binanceBuy !== null && bybitBuy !== null ? (binanceBuy + bybitBuy) / 2 : null;
 
   const brechaPct = bcb.data && bestBuyOffer?.buyPrice
     ? ((bestBuyOffer.buyPrice - bcb.data.tco) / bcb.data.tco) * 100
@@ -796,7 +800,7 @@ export default function Converter({ onTabChange }: { onTabChange?: (tab: any) =>
               </div>
 
               <p className="text-[9px] text-white/20 text-center leading-relaxed">
-                TCO oficial: Banco Central de Bolivia. Precio P2P: mejores órdenes entre Binance, Bybit y OKX.
+                TCO oficial: Banco Central de Bolivia. Precio P2P: mejores órdenes entre Binance y Bybit.
               </p>
             </div>
           </motion.div>
@@ -842,26 +846,42 @@ export default function Converter({ onTabChange }: { onTabChange?: (tab: any) =>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {p2p.status === 'loading' && (
               [0, 1, 2].map(i => (
                 <div key={i} className="glass-card p-5 h-48 bg-white/5 animate-pulse" />
               ))
             )}
             {p2p.status === 'error' && (
-              <div className="glass-card p-5 flex items-center space-x-2 text-amber-400 text-sm md:col-span-2">
+              <div className="glass-card p-5 flex items-center space-x-2 text-amber-400 text-sm md:col-span-3">
                 <Building2 className="w-4 h-4 flex-shrink-0" />
                 <span>No se pudieron cargar los exchanges P2P. Reintentando en el próximo ciclo.</span>
               </div>
             )}
-            {p2p.status === 'success' && p2p.data && p2p.data.exchanges.map((offer) => (
-              <P2PCard
-                key={offer.exchange}
-                offer={offer}
-                isBest={offer.exchange === bestBuyOffer?.exchange}
-                tco={bcb.data?.tco ?? null}
-              />
-            ))}
+            {p2p.status === 'success' && p2p.data && (
+              <>
+                {p2p.data.exchanges.map((offer) => (
+                  <P2PCard
+                    key={offer.exchange}
+                    offer={offer}
+                    isBest={offer.exchange === bestBuyOffer?.exchange}
+                    tco={bcb.data?.tco ?? null}
+                  />
+                ))}
+                <div className="glass-card p-5 space-y-3 flex flex-col items-center justify-center text-center border-neon-purple/20">
+                  <div className="flex items-center space-x-2 text-white/40 text-[10px] uppercase font-bold tracking-widest">
+                    <TrendingUp className="w-4 h-4 text-neon-purple" />
+                    <span>Precio Promedio P2P</span>
+                  </div>
+                  {avgBuyPrice !== null ? (
+                    <p className="text-3xl font-mono font-black text-neon-purple">{avgBuyPrice.toFixed(2)} <span className="text-xs">Bs</span></p>
+                  ) : (
+                    <p className="text-sm text-white/40">Sin datos suficientes</p>
+                  )}
+                  <p className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Binance + Bybit</p>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10">

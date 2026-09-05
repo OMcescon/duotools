@@ -85,42 +85,12 @@ async function fetchBybit(): Promise<P2POffer> {
   }
 }
 
-// OKX P2P (unofficial endpoint): side=buy/sell map directly to the
-// response's data.buy / data.sell arrays.
-async function fetchOkx(): Promise<P2POffer> {
-  const exchange = 'OKX P2P';
-  try {
-    const search = async (side: 'buy' | 'sell') => {
-      const url = `https://www.okx.com/v3/c2c/tradingOrders/books?side=${side}&baseCurrency=${ASSET.toLowerCase()}&quoteCurrency=${FIAT.toLowerCase()}&paymentMethod=all&userType=all`;
-      const response = await fetch(url, { headers: P2P_HEADERS });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const json = await response.json();
-      if (json.code !== 0) throw new Error('OKX error');
-      return (json.data?.[side] ?? []) as any[];
-    };
-
-    const [buyAds, sellAds] = await Promise.all([search('buy'), search('sell')]);
-
-    const buyPrices = buyAds.map((a) => parseFloat(a.price)).filter((p) => !isNaN(p));
-    const sellPrices = sellAds.map((a) => parseFloat(a.price)).filter((p) => !isNaN(p));
-    const methods = new Set<string>();
-    buyAds.forEach((a) => (a.paymentMethods ?? []).forEach((m: string) => methods.add(m)));
-
-    return {
-      exchange,
-      buyPrice: buyPrices.length ? Math.min(...buyPrices) : null,
-      sellPrice: sellPrices.length ? Math.max(...sellPrices) : null,
-      paymentMethods: Array.from(methods),
-      status: 'ok',
-    };
-  } catch (error: any) {
-    return { exchange, buyPrice: null, sellPrice: null, paymentMethods: [], status: 'error', error: error.message };
-  }
-}
-
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
+  // Solo Binance y Bybit: son las únicas dos plataformas P2P con liquidez
+  // real verificada en BOB. OKX se retiró — sus precios no son válidos para
+  // Bolivia (ver api/_lib/headers.ts y la investigación de fases previas).
   const offers = await fetchWithCache('p2p:usdt-bob', 30_000, async () => {
-    return Promise.all([fetchBinance(), fetchBybit(), fetchOkx()]);
+    return Promise.all([fetchBinance(), fetchBybit()]);
   });
 
   const usable = offers.filter((o) => o.status === 'ok' && o.buyPrice !== null);

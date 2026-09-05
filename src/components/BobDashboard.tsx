@@ -49,7 +49,6 @@ const FLOAT_START_DATE = '2026-06-29';
 const EXCHANGE_LINKS: Record<string, string> = {
   'Binance P2P': 'https://p2p.binance.com',
   'Bybit P2P': 'https://www.bybit.com/fiat/trade/otc',
-  'OKX P2P': 'https://www.okx.com/p2p-markets',
 };
 
 function formatBs(value: number) {
@@ -170,6 +169,11 @@ export default function BobDashboard() {
   const bestSellOffer = sellOffers.length
     ? sellOffers.reduce((a, b) => (b.sellPrice! > a.sellPrice! ? b : a))
     : null;
+
+  // Precio promedio entre las dos únicas plataformas con liquidez real (Binance + Bybit)
+  const binanceBuy = buyOffers.find((o) => o.exchange === 'Binance P2P')?.buyPrice ?? null;
+  const bybitBuy = buyOffers.find((o) => o.exchange === 'Bybit P2P')?.buyPrice ?? null;
+  const avgBuyPrice = binanceBuy !== null && bybitBuy !== null ? (binanceBuy + bybitBuy) / 2 : null;
   const activeOffer = calcMode === 'buy' ? bestBuyOffer : bestSellOffer;
   const activePrice = activeOffer ? (calcMode === 'buy' ? activeOffer.buyPrice : activeOffer.sellPrice) : null;
 
@@ -428,6 +432,18 @@ export default function BobDashboard() {
             {p2p.data.exchanges.map((offer) => (
               <ExchangeCard key={offer.exchange} offer={offer} isBest={offer.exchange === bestBuyOffer?.exchange} />
             ))}
+            <div className="glass-card p-6 space-y-3 flex flex-col items-center justify-center text-center border-neon-purple/20">
+              <div className="flex items-center space-x-2 text-white/40 text-xs uppercase tracking-wider">
+                <TrendingUp className="w-4 h-4" />
+                <span>Precio Promedio P2P</span>
+              </div>
+              {avgBuyPrice !== null ? (
+                <p className="text-3xl font-mono font-bold text-neon-purple">{formatBs(avgBuyPrice)}</p>
+              ) : (
+                <p className="text-sm text-white/40">Sin datos suficientes</p>
+              )}
+              <p className="text-[10px] text-white/30">Promedio compra Binance + Bybit</p>
+            </div>
           </div>
         )}
       </div>
@@ -544,7 +560,7 @@ export default function BobDashboard() {
           </button>
         </div>
         <p className="text-center sm:text-right">
-          Fuentes: BCB · Binance P2P · Bybit P2P · OKX P2P. Datos informativos, no constituye asesoría financiera.
+          Fuentes: BCB · Binance P2P · Bybit P2P. Datos informativos, no constituye asesoría financiera.
         </p>
       </div>
     </div>
