@@ -115,23 +115,6 @@ export const fetchP2pRates = async () => {
 };
 
 /**
- * Historical Data for Charts with Range Support
- */
-export const fetchHistoricalData = async (coinId: string, vsCurrency: string = 'usd', days: string = '1') => {
-  try {
-    const res = await axios.get(`/api/historical-data?coinId=${coinId}&vsCurrency=${vsCurrency}&days=${days}`);
-    // Returns [timestamp, price] pairs
-    return res.data.prices.map((p: [number, number]) => ({
-      time: p[0] / 1000, // lightweight-charts expects seconds
-      value: p[1]
-    }));
-  } catch (error) {
-    console.error("Error fetching historical data:", error);
-    return [];
-  }
-};
-
-/**
  * PDF Manipulation Engine (Client-Side)
  */
 export async function convertImageToPDF(files: File[]) {
@@ -362,6 +345,3 @@ export async function convertWordToPDF(file: File) {
   return new Blob([bytes], { type: 'application/pdf' });
 }
 
-export async function pdfToImages(_file: File): Promise<Blob[]> {
-  throw new Error('Conversión PDF a imágenes no disponible en esta versión');
-}

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import {
-  Search, Zap, Layers, FileType, ShieldCheck,
+  Search, Zap, Layers, ShieldCheck,
   Scissors, FileText, ImageIcon, RotateCw,
-  Trash2, FilePlus, Layout, Type, FileSearch,
+  Trash2, FilePlus, Layout, Type,
   ArrowRight, Star, Clock, Shield, Globe, Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,9 +13,8 @@ interface PDFTool {
   name: string;
   description: string;
   icon: React.ElementType;
-  category: 'most-used' | 'compress' | 'convert-to' | 'convert-from' | 'organize' | 'edit';
+  category: 'most-used' | 'compress' | 'convert-to' | 'organize' | 'edit';
   isLocal: boolean;
-  isPremium?: boolean;
 }
 
 const PDF_TOOLS: PDFTool[] = [
@@ -23,15 +22,12 @@ const PDF_TOOLS: PDFTool[] = [
   { id: 'merge', name: 'Unir PDF', description: 'Combina varios archivos en uno solo.', icon: Layers, category: 'most-used', isLocal: true },
   { id: 'split', name: 'Dividir PDF', description: 'Extrae páginas o separa por rangos.', icon: Scissors, category: 'most-used', isLocal: true },
   { id: 'img-to-pdf', name: 'Imágenes a PDF', description: 'Convierte JPG, PNG a documento PDF.', icon: ImageIcon, category: 'convert-to', isLocal: true },
-  { id: 'pdf-to-img', name: 'PDF a Imágenes', description: 'Extrae páginas como archivos JPG/PNG.', icon: FileType, category: 'convert-from', isLocal: true },
   { id: 'rotate', name: 'Girar PDF', description: 'Rota páginas en bloque o individualmente.', icon: RotateCw, category: 'organize', isLocal: true },
   { id: 'extract', name: 'Extraer Páginas', description: 'Selecciona y guarda páginas específicas.', icon: FilePlus, category: 'organize', isLocal: true },
   { id: 'delete', name: 'Eliminar Páginas', description: 'Quita páginas innecesarias del archivo.', icon: Trash2, category: 'organize', isLocal: true },
   { id: 'reorder', name: 'Ordenar Páginas', description: 'Cambia el orden de las páginas visualmente.', icon: Layout, category: 'organize', isLocal: true },
   { id: 'watermark', name: 'Marca de Agua', description: 'Añade texto o imagen sobre el PDF.', icon: Type, category: 'edit', isLocal: true },
-  { id: 'ocr', name: 'PDF OCR', description: 'Convierte escaneos en texto buscable.', icon: FileSearch, category: 'edit', isLocal: false, isPremium: true },
   { id: 'word-to-pdf', name: 'Word a PDF', description: 'Convierte archivos .docx a PDF.', icon: FileText, category: 'convert-to', isLocal: true },
-  { id: 'pdf-to-word', name: 'PDF a Word', description: 'Convierte PDF a documento editable.', icon: FileText, category: 'convert-from', isLocal: false, isPremium: true },
 ];
 
 const CATEGORIES = [
@@ -39,7 +35,6 @@ const CATEGORIES = [
   { id: 'most-used', label: 'Más usadas' },
   { id: 'compress', label: 'Optimizar' },
   { id: 'convert-to', label: 'Convertir a PDF' },
-  { id: 'convert-from', label: 'Convertir desde PDF' },
   { id: 'organize', label: 'Organizar' },
   { id: 'edit', label: 'Editar' },
 ];
@@ -139,9 +134,6 @@ export default function PDFSuite() {
                     <tool.icon className="w-6 h-6 text-neon-cyan" />
                   </div>
                   <div className="flex space-x-2">
-                    {tool.isPremium && (
-                      <span className="text-[8px] font-bold bg-amber-500/20 text-amber-500 px-1.5 py-0.5 rounded border border-amber-500/30 uppercase">Premium</span>
-                    )}
                     <button className="text-white/20 hover:text-amber-400 transition-colors">
                       <Star className="w-4 h-4" />
                     </button>

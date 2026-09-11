@@ -19,11 +19,7 @@ const CURRENCIES = [
   { id: 'ars', name: 'Argentine Peso', symbol: '$', type: 'fiat' },
   { id: 'brl', name: 'Brazilian Real', symbol: 'R$', type: 'fiat' },
   { id: 'clp', name: 'Chilean Peso', symbol: '$', type: 'fiat' },
-  { id: 'cop', name: 'Colombian Peso', symbol: '$', type: 'fiat' },
-  { id: 'ves', name: 'Venezuelan Bolívar', symbol: 'Bs.', type: 'fiat' },
   { id: 'mxn', name: 'Mexican Peso', symbol: '$', type: 'fiat' },
-  { id: 'uyu', name: 'Uruguayan Peso', symbol: '$U', type: 'fiat' },
-  { id: 'pyg', name: 'Paraguayan Guarani', symbol: '₲', type: 'fiat' },
   { id: 'bob', name: 'Boliviano (TCO Oficial BCB)', symbol: 'Bs', type: 'fiat' },
   { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', type: 'crypto' },
   { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', type: 'crypto' },
@@ -446,9 +442,9 @@ export default function Converter({ onTabChange }: { onTabChange?: (tab: any) =>
     <div className="space-y-12 pb-20">
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-neon-purple to-neon-cyan bg-clip-text text-transparent">
-          Live Exchange
+          Conversor
         </h2>
-        <p className="text-white/60">Professional real-time market data with advanced analytics.</p>
+        <p className="text-white/60">Datos de mercado en tiempo real con análisis avanzado.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

@@ -1,6 +1,11 @@
 type CacheEntry<T> = { data: T; timestamp: number };
 
 const cache = new Map<string, CacheEntry<unknown>>();
+// Límite defensivo: algunos endpoints derivan la cache key de un parámetro de
+// query (ver crypto-rates.ts), así que sin tope el Map podría crecer sin
+// límite en una instancia serverless caliente. Al superarlo, se descarta la
+// entrada más antigua (Map conserva el orden de inserción).
+const MAX_CACHE_ENTRIES = 200;
 
 /**
  * Short-lived in-memory cache scoped to a warm serverless instance.
@@ -18,6 +23,10 @@ export async function fetchWithCache<T>(key: string, ttlMs: number, fetcher: () 
 
   try {
     const data = await fetcher();
+    if (!cache.has(key) && cache.size >= MAX_CACHE_ENTRIES) {
+      const oldestKey = cache.keys().next().value;
+      if (oldestKey !== undefined) cache.delete(oldestKey);
+    }
     cache.set(key, { data, timestamp: now });
     return data;
   } catch (error) {

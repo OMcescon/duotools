@@ -8,8 +8,19 @@ const DEFAULT_IDS = 'bitcoin,ethereum,solana,tether,binancecoin';
 // pero Frankfurter (ECB) no publica: ARS y CLP.
 const FIAT_BRIDGE_COIN = 'bitcoin';
 
+// IDs de CoinGecko: minúsculas, dígitos y guiones, separados por comas.
+// Evita reenviar caracteres (&, #, espacios, etc.) que permitirían inyectar
+// parámetros arbitrarios en la petición a CoinGecko.
+const VALID_IDS_LIST = /^[a-z0-9-]+(,[a-z0-9-]+)*$/;
+const MAX_IDS_LENGTH = 300;
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const ids = (req.query.ids as string) || DEFAULT_IDS;
+
+  if (ids.length > MAX_IDS_LENGTH || !VALID_IDS_LIST.test(ids)) {
+    res.status(400).json({ error: 'Parámetro "ids" inválido' });
+    return;
+  }
 
   try {
     const usdPrices = await fetchWithCache(`coingecko:${ids}`, 30_000, async () => {

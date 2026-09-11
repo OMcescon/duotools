@@ -11,7 +11,7 @@ import {
   handleImageCompression, compressPDF, convertImageToPDF,
   mergePDFs, splitPDF, rotatePDF,
   extractPages, deletePages, addWatermark,
-  convertWordToPDF, pdfToImages, reorderPages
+  convertWordToPDF, reorderPages
 } from '../logic';
 
 interface FileStatus {
@@ -23,6 +23,17 @@ interface FileStatus {
   resultSize?: number;
   preview?: string;
   errorMessage?: string;
+}
+
+const MIME_EXTENSIONS: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
+
+function extensionForMimeType(mimeType: string): string {
+  return MIME_EXTENSIONS[mimeType] || 'pdf';
 }
 
 interface ToolInterfaceProps {
@@ -95,9 +106,6 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
         case 'img-to-pdf':
           resultBlob = await convertImageToPDF(files.map(f => f.file));
           break;
-        case 'pdf-to-img':
-          resultBlob = await pdfToImages(files[0].file);
-          break;
         case 'rotate':
           resultBlob = await rotatePDF(files[0].file, rotation);
           break;
@@ -116,11 +124,6 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
         case 'word-to-pdf':
           resultBlob = await convertWordToPDF(files[0].file);
           break;
-        case 'ocr':
-        case 'pdf-to-word':
-          alert("Esta herramienta requiere una suscripción Premium y procesamiento en la nube.");
-          setIsProcessing(false);
-          return;
         default:
           throw new Error('Tool not implemented yet');
       }
@@ -144,8 +147,9 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
         }));
         setFiles(newFiles);
       } else {
+        const extension = extensionForMimeType(resultBlob.type);
         const resultFile: FileStatus = {
-          file: new File([resultBlob], `duotools-${tool.id}-${Date.now()}.pdf`, { type: resultBlob.type }),
+          file: new File([resultBlob], `duotools-${tool.id}-${Date.now()}.${extension}`, { type: resultBlob.type }),
           id: 'result',
           status: 'success',
           resultBlob: resultBlob,
