@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  Search, Zap, Layers, FileType, ShieldCheck, 
-  Scissors, FileText, ImageIcon, Lock, RotateCw, 
+import {
+  Search, Zap, Layers, FileType, ShieldCheck,
+  Scissors, FileText, ImageIcon, RotateCw,
   Trash2, FilePlus, Layout, Type, FileSearch,
   ArrowRight, Star, Clock, Shield, Globe, Info
 } from 'lucide-react';
@@ -13,7 +13,7 @@ interface PDFTool {
   name: string;
   description: string;
   icon: React.ElementType;
-  category: 'most-used' | 'compress' | 'convert-to' | 'convert-from' | 'organize' | 'security' | 'edit';
+  category: 'most-used' | 'compress' | 'convert-to' | 'convert-from' | 'organize' | 'edit';
   isLocal: boolean;
   isPremium?: boolean;
 }
@@ -24,7 +24,6 @@ const PDF_TOOLS: PDFTool[] = [
   { id: 'split', name: 'Dividir PDF', description: 'Extrae páginas o separa por rangos.', icon: Scissors, category: 'most-used', isLocal: true },
   { id: 'img-to-pdf', name: 'Imágenes a PDF', description: 'Convierte JPG, PNG a documento PDF.', icon: ImageIcon, category: 'convert-to', isLocal: true },
   { id: 'pdf-to-img', name: 'PDF a Imágenes', description: 'Extrae páginas como archivos JPG/PNG.', icon: FileType, category: 'convert-from', isLocal: true },
-  { id: 'protect', name: 'Proteger PDF', description: 'Añade contraseña y cifrado de seguridad.', icon: Lock, category: 'security', isLocal: true },
   { id: 'rotate', name: 'Girar PDF', description: 'Rota páginas en bloque o individualmente.', icon: RotateCw, category: 'organize', isLocal: true },
   { id: 'extract', name: 'Extraer Páginas', description: 'Selecciona y guarda páginas específicas.', icon: FilePlus, category: 'organize', isLocal: true },
   { id: 'delete', name: 'Eliminar Páginas', description: 'Quita páginas innecesarias del archivo.', icon: Trash2, category: 'organize', isLocal: true },
@@ -42,7 +41,6 @@ const CATEGORIES = [
   { id: 'convert-to', label: 'Convertir a PDF' },
   { id: 'convert-from', label: 'Convertir desde PDF' },
   { id: 'organize', label: 'Organizar' },
-  { id: 'security', label: 'Seguridad' },
   { id: 'edit', label: 'Editar' },
 ];
 
@@ -95,6 +93,10 @@ export default function PDFSuite() {
             />
           </div>
         </div>
+
+        <p className="text-[11px] text-white/30 max-w-lg mx-auto leading-relaxed">
+          No incluimos "Proteger PDF": el cifrado real de PDFs requiere software especializado, y preferimos no ofrecerte una protección falsa.
+        </p>
       </div>
 
       {/* Categories */}

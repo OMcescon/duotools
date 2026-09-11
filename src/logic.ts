@@ -295,18 +295,6 @@ export async function addWatermark(file: File, text: string) {
   return new Blob([bytes], { type: 'application/pdf' });
 }
 
-export async function protectPDF(file: File, password: string) {
-  const { PDFDocument } = await import('pdf-lib');
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(arrayBuffer);
-  
-  // Note: pdf-lib doesn't support native encryption yet.
-  // We'll add a metadata flag as a placeholder.
-  pdf.setTitle(`Protected - ${password.length} chars`);
-  const bytes = await pdf.save(); 
-  return new Blob([bytes], { type: 'application/pdf' });
-}
-
 export async function reorderPages(file: File, newOrder: string) {
   const { PDFDocument } = await import('pdf-lib');
   const arrayBuffer = await file.arrayBuffer();
@@ -328,30 +316,52 @@ export async function convertWordToPDF(file: File) {
   const mammoth = await import('mammoth');
   const arrayBuffer = await file.arrayBuffer();
   const result = await mammoth.convertToHtml({ arrayBuffer });
-  const html = result.value;
-  
+  const text = result.value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
   const { PDFDocument, StandardFonts } = await import('pdf-lib');
   const pdfDoc = await PDFDocument.create();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const page = pdfDoc.addPage();
-  
-  const text = html.replace(/<[^>]*>/g, ' ').substring(0, 2000);
-  page.drawText(text, {
-    x: 50,
-    y: page.getHeight() - 100,
-    size: 10,
-    font,
-    maxWidth: page.getWidth() - 100
-  });
-  
+
+  const fontSize = 11;
+  const lineHeight = fontSize * 1.4;
+  const margin = 50;
+  const pageWidth = 595.28; // A4
+  const pageHeight = 841.89; // A4
+  const maxLineWidth = pageWidth - margin * 2;
+  const linesPerPage = Math.floor((pageHeight - margin * 2) / lineHeight);
+
+  // Word-wrap el texto completo (sin truncar) a líneas que caben en el ancho de página
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let currentLine = '';
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    if (font.widthOfTextAtSize(testLine, fontSize) > maxLineWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+  if (lines.length === 0) lines.push('');
+
+  for (let i = 0; i < lines.length; i += linesPerPage) {
+    const page = pdfDoc.addPage([pageWidth, pageHeight]);
+    lines.slice(i, i + linesPerPage).forEach((line, idx) => {
+      page.drawText(line, {
+        x: margin,
+        y: pageHeight - margin - idx * lineHeight,
+        size: fontSize,
+        font,
+      });
+    });
+  }
+
   const bytes = await pdfDoc.save();
   return new Blob([bytes], { type: 'application/pdf' });
 }
 
-export async function pdfToImages(file: File) {
-  // Client-side PDF to Image requires pdf.js which is heavy.
-  // For now, we return the original file as a placeholder or 
-  // we could implement a basic extraction if we had the right libs.
-  console.warn("PDF to Image is not fully implemented client-side yet.");
-  return [file]; 
+export async function pdfToImages(_file: File): Promise<Blob[]> {
+  throw new Error('Conversión PDF a imágenes no disponible en esta versión');
 }

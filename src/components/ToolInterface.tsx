@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { 
+import {
   handleImageCompression, compressPDF, convertImageToPDF,
-  mergePDFs, splitPDF, rotatePDF, protectPDF,
+  mergePDFs, splitPDF, rotatePDF,
   extractPages, deletePages, addWatermark,
   convertWordToPDF, pdfToImages, reorderPages
 } from '../logic';
@@ -22,6 +22,7 @@ interface FileStatus {
   originalSize: number;
   resultSize?: number;
   preview?: string;
+  errorMessage?: string;
 }
 
 interface ToolInterfaceProps {
@@ -39,7 +40,6 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
   const [files, setFiles] = useState<FileStatus[]>([]);
   const [quality, setQuality] = useState(70);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [password, setPassword] = useState('');
   const [rotation, setRotation] = useState(90);
   const [range, setRange] = useState('1-2');
   const [watermarkText, setWatermarkText] = useState('DuoTools');
@@ -55,7 +55,7 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
     }));
     
     // For tools that only support single file, replace. Others, append.
-    if (['compress', 'split', 'rotate', 'protect'].includes(tool.id)) {
+    if (['compress', 'split', 'rotate'].includes(tool.id)) {
       setFiles(newFiles.slice(0, 1));
     } else {
       setFiles(prev => [...prev, ...newFiles]);
@@ -100,9 +100,6 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
           break;
         case 'rotate':
           resultBlob = await rotatePDF(files[0].file, rotation);
-          break;
-        case 'protect':
-          resultBlob = await protectPDF(files[0].file, password);
           break;
         case 'extract':
           resultBlob = await extractPages(files[0].file, range);
@@ -159,7 +156,8 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
       }
     } catch (error) {
       console.error('Action failed:', error);
-      setFiles(prev => prev.map(f => ({ ...f, status: 'error' })));
+      const message = error instanceof Error ? error.message : 'Ocurrió un error inesperado.';
+      setFiles(prev => prev.map(f => ({ ...f, status: 'error', errorMessage: message })));
     } finally {
       setIsProcessing(false);
     }
@@ -251,6 +249,13 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
                           <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Listo</span>
                           <span className="text-[10px] text-white/20">•</span>
                           <span className="text-[10px] font-mono text-white/60">{formatSize(fileObj.resultSize!)}</span>
+                        </div>
+                      )}
+
+                      {fileObj.status === 'error' && (
+                        <div className="mt-2 flex items-center space-x-1.5 text-amber-400">
+                          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span className="text-[10px] font-bold leading-snug">{fileObj.errorMessage || 'No se pudo procesar el archivo.'}</span>
                         </div>
                       )}
                     </div>
@@ -353,19 +358,6 @@ export default function ToolInterface({ tool, onBack }: ToolInterfaceProps) {
                       </button>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {tool.id === 'protect' && (
-                <div className="space-y-4">
-                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Contraseña</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Escribe la contraseña..."
-                    className="glass-input w-full"
-                  />
                 </div>
               )}
 
