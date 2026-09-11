@@ -20,7 +20,6 @@ const CURRENCIES = [
   { id: 'brl', name: 'Brazilian Real', symbol: 'R$', type: 'fiat' },
   { id: 'clp', name: 'Chilean Peso', symbol: '$', type: 'fiat' },
   { id: 'cop', name: 'Colombian Peso', symbol: '$', type: 'fiat' },
-  { id: 'pen', name: 'Peruvian Sol', symbol: 'S/', type: 'fiat' },
   { id: 'ves', name: 'Venezuelan Bolívar', symbol: 'Bs.', type: 'fiat' },
   { id: 'mxn', name: 'Mexican Peso', symbol: '$', type: 'fiat' },
   { id: 'uyu', name: 'Uruguayan Peso', symbol: '$U', type: 'fiat' },
@@ -65,7 +64,7 @@ const ANOMALY_THRESHOLD = 0.3;
 // /api/crypto-rates, /api/bcb-rate, /api/bcb-history y /api/p2p-rates. ---
 
 type FiatRateData = { source: string; base: string; rates: Record<string, number>; officialDate: string; timestamp: string };
-type CryptoRateData = { source: string; prices: Record<string, { usd: number; bob: number | null }>; usdBobRate: number | null; timestamp: string };
+type CryptoRateData = { source: string; prices: Record<string, { usd: number; bob: number | null }>; usdBobRate: number | null; fiatCross?: { ars: number | null; clp: number | null }; timestamp: string };
 type BcbRateData = { source: string; tco: number; cutoffDate: string | null; effectiveDate: string | null; timestamp: string };
 type HistoryPoint = { date: string; value: number };
 type P2POffer = { exchange: string; buyPrice: number | null; sellPrice: number | null; paymentMethods: string[]; status: 'ok' | 'error'; error?: string };
@@ -193,6 +192,10 @@ export default function Converter({ onTabChange }: { onTabChange?: (tab: any) =>
     Object.keys(crypto.data.prices).forEach(id => {
       usdRates[id] = crypto.data!.prices[id].usd;
     });
+  }
+  if (crypto.data?.fiatCross) {
+    if (crypto.data.fiatCross.ars) usdRates['ars'] = 1 / crypto.data.fiatCross.ars;
+    if (crypto.data.fiatCross.clp) usdRates['clp'] = 1 / crypto.data.fiatCross.clp;
   }
   if (bcb.data) {
     usdRates['bob'] = 1 / bcb.data.tco;
@@ -812,7 +815,7 @@ export default function Converter({ onTabChange }: { onTabChange?: (tab: any) =>
               <span className="text-[9px] text-white/20 uppercase font-bold tracking-tighter">vs BOB (TCO Oficial)</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {CURRENCIES.filter(c => ['ars', 'pen', 'clp', 'brl'].includes(c.id)).map(c => (
+              {CURRENCIES.filter(c => ['ars', 'clp', 'brl', 'mxn'].includes(c.id)).map(c => (
                 <div key={c.id} className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between hover:border-neon-cyan/20 transition-all group">
                   <div className="flex items-center space-x-2">
                     <div className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-[10px] font-bold text-white/40 group-hover:text-neon-cyan transition-colors">
