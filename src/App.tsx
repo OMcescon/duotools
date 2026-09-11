@@ -6,8 +6,6 @@ import Converter from './components/Converter';
 import Methodology from './components/Methodology';
 import BobDashboard from './components/BobDashboard';
 
-// TEMP (Fase 3 — prueba local): 'bob' se agrega aquí solo para probar
-// BobDashboard en el navegador. Se reemplaza por la navegación final en Fase 7.
 type Tab = 'compressor' | 'converter' | 'methodology' | 'bob';
 
 export default function App() {
@@ -38,17 +36,7 @@ export default function App() {
                     : 'text-white/40 hover:text-white/60'
                 }`}
               >
-                BOB Hoy (TEMP)
-              </button>
-              <button
-                onClick={() => setActiveTab('compressor')}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === 'compressor'
-                    ? 'bg-white/10 text-white shadow-sm'
-                    : 'text-white/40 hover:text-white/60'
-                }`}
-              >
-                Smart PDF Suite
+                BOB Hoy
               </button>
               <button
                 onClick={() => setActiveTab('converter')}
@@ -58,17 +46,17 @@ export default function App() {
                     : 'text-white/40 hover:text-white/60'
                 }`}
               >
-                Live Exchange
+                Conversor
               </button>
               <button
-                onClick={() => setActiveTab('methodology')}
+                onClick={() => setActiveTab('compressor')}
                 className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === 'methodology'
+                  activeTab === 'compressor'
                     ? 'bg-white/10 text-white shadow-sm'
                     : 'text-white/40 hover:text-white/60'
                 }`}
               >
-                Metodología
+                PDF Suite
               </button>
             </div>
 
@@ -111,19 +99,7 @@ export default function App() {
                 }`}
               >
                 <LineChart className="w-5 h-5" />
-                <span className="font-medium">BOB Hoy (TEMP)</span>
-              </button>
-              <button
-                onClick={() => {
-                  setActiveTab('compressor');
-                  setIsMenuOpen(false);
-                }}
-                className={`w-full flex items-center space-x-3 p-4 rounded-xl transition-all ${
-                  activeTab === 'compressor' ? 'bg-neon-purple/10 text-neon-purple' : 'text-white/60'
-                }`}
-              >
-                <FileText className="w-5 h-5" />
-                <span className="font-medium">Smart PDF Suite</span>
+                <span className="font-medium">BOB Hoy</span>
               </button>
               <button
                 onClick={() => {
@@ -135,19 +111,19 @@ export default function App() {
                 }`}
               >
                 <LineChart className="w-5 h-5" />
-                <span className="font-medium">Live Exchange</span>
+                <span className="font-medium">Conversor</span>
               </button>
               <button
                 onClick={() => {
-                  setActiveTab('methodology');
+                  setActiveTab('compressor');
                   setIsMenuOpen(false);
                 }}
                 className={`w-full flex items-center space-x-3 p-4 rounded-xl transition-all ${
-                  activeTab === 'methodology' ? 'bg-neon-cyan/10 text-neon-cyan' : 'text-white/60'
+                  activeTab === 'compressor' ? 'bg-neon-purple/10 text-neon-purple' : 'text-white/60'
                 }`}
               >
-                <LayoutGrid className="w-5 h-5" />
-                <span className="font-medium">Metodología</span>
+                <FileText className="w-5 h-5" />
+                <span className="font-medium">PDF Suite</span>
               </button>
             </div>
           </motion.div>
@@ -175,7 +151,13 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-white/5 text-center">
+      <footer className="py-8 border-t border-white/5 text-center space-y-3">
+        <button
+          onClick={() => setActiveTab('methodology')}
+          className="text-xs font-medium uppercase tracking-wider text-white/40 hover:text-neon-cyan transition-colors"
+        >
+          Metodología
+        </button>
         <p className="text-sm text-white/20">
           &copy; 2024 DuoTools Platform. All rights reserved.
         </p>
